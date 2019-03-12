@@ -2,13 +2,17 @@
 
 import de.bezier.guido.*;
 //Declare and initialize NUM_ROWS and NUM_COLS = 20
-int NUM_ROWS = 25;
-int NUM_COLS = 25;
+int NUM_ROWS = 10;
+int NUM_COLS = 10;
+public int bombcounter;
+public int correctBombs;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs; //ArrayList of just the minesweeper buttons that are mined
 
 void setup ()
 {
+    bombcounter = 0;
+    correctBombs = 0;
     size(400, 400);
     textAlign(CENTER,CENTER);
     
@@ -27,8 +31,8 @@ void setup ()
 }
 public void setBombs()
 {
-    int bombcounter = 0;
-    while(bombcounter<(NUM_ROWS*NUM_COLS)/5){
+    
+    while(bombcounter<NUM_ROWS){
         int row = (int)(Math.random()*NUM_ROWS);
         int col = (int)(Math.random()*NUM_COLS);
         if(!bombs.contains(buttons[row][col])){
@@ -43,21 +47,19 @@ public void setBombs()
 public void draw ()
 {
     background( 0 );
-    if(isWon())
+    if(correctBombs==bombcounter){
         displayWinningMessage();
+    }
 }
-public boolean isWon()
-{
-    //your code here
-    return false;
-}
+
 public void displayLosingMessage()
 {
-    System.out.println("ur trash");
+    System.out.println("ur trash, try again");
+    setup();
 }
 public void displayWinningMessage()
 {
-    //your code here
+    
 }
 
 public class MSButton
@@ -99,6 +101,9 @@ public class MSButton
             if(marked == false){
                 clicked = false;
             }
+            if(bombs.contains(this)){
+                correctBombs += 1;
+            }
         }else if(bombs.contains(this)){
             displayLosingMessage();
         }else if(countBombs(r,c)>0){
@@ -110,7 +115,7 @@ public class MSButton
                     if(r==0 && c==0){
                         r+=0;
                     }
-                    if(isValid(this.r + r, this.c + c)){
+                    if(isValid(this.r + r, this.c + c)&& !buttons[this.r+r][this.c+c].isClicked()){
                         buttons[this.r+r][this.c+c].mousePressed();
                     }
                 }
@@ -128,7 +133,10 @@ public class MSButton
             fill( 200 );
         else 
             fill( 100 );
-
+        if(correctBombs==bombcounter){
+            fill(255,255,0);
+            setLabel("");
+        }
         rect(x, y, width, height);
         fill(0);
         text(label,x+width/2,y+height/2);
